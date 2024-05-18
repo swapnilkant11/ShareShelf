@@ -1,9 +1,9 @@
 package main
 
 import (
-	"ShareShelf/controllers"
 	"ShareShelf/database/connection"
 	"ShareShelf/middlewares"
+	"ShareShelf/routes"
 	"log"
 	"os"
 
@@ -25,19 +25,10 @@ func main() {
 	PORT := os.Getenv("PORT")
 
 	// Initialize Router
-	router := initRouter()
+	router := gin.New()
+	router.Use(gin.Logger())
+	routes.UserRoutes(router)
+	router.Use(middlewares.Auth())
+	routes.SecureRoutes(router)
 	router.Run(PORT)
-}
-func initRouter() *gin.Engine {
-	router := gin.Default()
-	api := router.Group("/api")
-	{
-		api.POST("/login", controllers.GenerateToken)
-		api.POST("/user/register", controllers.RegisterUser)
-		secured := api.Group("/secured").Use(middlewares.Auth())
-		{
-			secured.GET("/ping", controllers.Ping)
-		}
-	}
-	return router
 }
