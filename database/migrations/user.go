@@ -1,14 +1,14 @@
 package main
 
 import (
-	"ShareShelf/database/connections"
+	"ShareShelf/database/connection"
 	"ShareShelf/database/models"
 	"log"
 )
 
 func main() {
 	// Connect to the database
-	Instance, dbError := connections.ConnectDB()
+	Instance, dbError := connection.ConnectDB()
 	if dbError != nil {
 		log.Fatal(dbError)
 	}
