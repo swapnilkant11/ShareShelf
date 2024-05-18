@@ -14,17 +14,14 @@ import (
 var Instance *gorm.DB
 
 func ConnectDB() (*gorm.DB, error) {
-	// Get the absolute path to the root directory
-	rootDir, err := os.Getwd()
+	// Get the absolute path to the current working directory
+	cwd, err := os.Getwd()
 	if err != nil {
-		log.Fatalf("Error getting root directory: %v", err)
+		log.Fatalf("Error getting current working directory: %v", err)
 	}
 
-	// Navigate up two level to the root directory
-	rootDir = filepath.Dir(filepath.Dir(rootDir))
-
 	// Construct the path to the .env file in the root directory
-	envPath := filepath.Join(rootDir, ".env")
+	envPath := filepath.Join(cwd, ".env")
 
 	// Load the .env file
 	err = godotenv.Load(envPath)
@@ -40,7 +37,12 @@ func ConnectDB() (*gorm.DB, error) {
 	dbOptions := os.Getenv("DB_OPTIONS")
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?%s", dbUser, dbPassword, dbHost, dbPort, dbName, dbOptions)
-	Instance, dbError := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	instance, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
 
-	return Instance, dbError
+	Instance = instance
+	log.Println("Connected to Database!")
+	return Instance, nil
 }
