@@ -22,3 +22,5 @@ go.work
 
 # Environment variables file
 .env
+atlas.hcl
+atlas.sum
